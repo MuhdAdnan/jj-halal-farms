@@ -1,0 +1,169 @@
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manage Orders | JJ Halal Farms</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="bg-light" style="font-family: 'Poppins', sans-serif;">
+
+{% if messages %}
+<div class="position-fixed top-0 end-0 p-3" style="z-index: 1055;">
+  {% for message in messages %}
+    <div class="toast align-items-center text-bg-{{ message.tags }} border-0 mb-2" role="alert">
+      <div class="d-flex">
+        <div class="toast-body">{{ message }}</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<!-- ================= NAVBAR ================= -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-success px-4">
+  <a class="navbar-brand fw-bold" href="{% url 'admin_panel:dashboard' %}">
+    Welcome, {{ request.user.username }}
+  </a>
+
+  <button class="navbar-toggler d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#adminSidebar">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="ms-auto d-flex gap-2">
+    <a href="{% url 'admin_panel:logout' %}" class="btn btn-outline-light btn-sm">
+      <i class="bi bi-box-arrow-right"></i> Logout
+    </a>
+  </div>
+</nav>
+
+<!-- ================= MAIN LAYOUT ================= -->
+<div class="container-fluid">
+  <div class="row">
+
+    <!-- SIDEBAR -->
+    <aside class="col-md-2 bg-white p-0 sidebar collapse d-md-block" id="adminSidebar">
+      <ul class="nav flex-column pt-4">
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'admin_panel:dashboard' %}">
+            <i class="bi bi-speedometer2"></i> Dashboard
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'admin_panel:products' %}">
+            <i class="bi bi-box-seam"></i> Products
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="{% url 'admin_panel:orders' %}">
+            <i class="bi bi-cart-check"></i> Orders
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'admin_panel:customers' %}">
+            <i class="bi bi-people"></i> Customers
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'admin_panel:profile' %}">
+            <i class="bi bi-person-badge"></i> Profile
+          </a>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- CONTENT -->
+    <main class="col-md-10 p-4">
+
+      <h3 class="mb-4"><i class="bi bi-cart-check me-2"></i>Customer Orders</h3>
+
+      <!-- ORDERS TABLE -->
+      <div class="card shadow-sm">
+        <div class="card-body table-responsive">
+          <table class="table table-striped align-middle">
+            <thead class="table-success">
+              <tr>
+                <th>#</th>
+                <th>Customer</th>
+                <th>Phone</th>
+                <th>Items</th>
+                <th>Total</th>
+                <th>Delivery</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for order in orders %}
+              <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ order.full_name|default:order.user.get_full_name|default:order.user.username }}</td>
+                <td>{{ order.phone|default:"-" }}</td>
+                <td>
+                  {% for item in order.items.all %}
+                    {{ item.product.name }} (x{{ item.quantity }}){% if not forloop.last %}, {% endif %}
+                  {% empty %}
+                    -
+                  {% endfor %}
+                </td>
+                <td>₦{{ order.total_amount|intcomma }}</td>
+                <td>{{ order.get_delivery_method_display }}</td>
+                <td>
+                  {% if order.status == "pending" %}
+                    <span class="badge bg-warning">Pending</span>
+                  {% elif order.status == "awaiting_payment" %}
+                    <span class="badge bg-info">Awaiting Payment</span>
+                  {% elif order.status == "completed" %}
+                    <span class="badge bg-success">Completed</span>
+                  {% else %}
+                    <span class="badge bg-secondary">{{ order.get_status_display }}</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <form method="post" action="{% url 'admin_panel:update_order_status' order.id %}">
+                    {% csrf_token %}
+                    <div class="d-flex gap-2">
+                      <select name="status" class="form-select form-select-sm">
+                        {% for value, label in status_choices %}
+                          <option value="{{ value }}" {% if order.status == value %}selected{% endif %}>
+                            {{ label }}
+                          </option>
+                        {% endfor %}
+                      </select>
+                      <button type="submit" class="btn btn-sm btn-outline-success">Update</button>
+                    </div>
+                  </form>
+                  <a href="{% url 'admin_panel:order_detail' order.id %}" class="btn btn-sm btn-link mt-1">View details</a>
+                </td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="8" class="text-center">No orders yet.</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  document.querySelectorAll('.toast').forEach((toastEl) => {
+    const toast = new bootstrap.Toast(toastEl, { delay: 4000 });
+    toast.show();
+  });
+</script>
+</body>
+</html>

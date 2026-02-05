@@ -1,0 +1,73 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Inbox | JJ HALAL FARMS</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body class="bg-light" style="padding-top: 96px; font-family: 'Poppins', sans-serif;">
+
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom fixed-top">
+  <div class="container gap-3">
+    <a class="navbar-brand fw-bold text-success" href="{% url 'core:home' %}">
+      <i class="bi bi-shop me-1"></i> JJ HALAL FARMS
+    </a>
+
+    <div class="d-flex align-items-center gap-2 ms-auto">
+      <div class="dropdown">
+        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+          <i class="bi bi-person-circle me-1"></i>
+          {{ request.user.get_full_name|default:request.user.username }}
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="{% url 'core:home' %}"><i class="bi bi-house me-2"></i>Home</a></li>
+          <li><a class="dropdown-item" href="{% url 'accounts:inbox' %}"><i class="bi bi-inbox me-2"></i>Inbox</a></li>
+          <li><a class="dropdown-item" href="{% url 'orders:order_history' %}"><i class="bi bi-bag-check me-2"></i>Orders</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item text-danger" href="{% url 'accounts:logout' %}"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+        </ul>
+      </div>
+      <a class="btn btn-outline-secondary" href="{% url 'orders:cart' %}">
+        <i class="bi bi-cart3 me-1"></i>Cart ({{ cart_count }})
+      </a>
+    </div>
+  </div>
+</nav>
+
+<div class="container py-5">
+  <h3 class="mb-4">Inbox</h3>
+  {% if messages_list %}
+    <div class="list-group">
+      {% for msg in messages_list %}
+        <div class="list-group-item">
+          <div class="d-flex justify-content-between">
+            <strong>{{ msg.subject|default:"Message from JJ Halal Farms" }}</strong>
+            <small class="text-muted">{{ msg.created_at|date:"Y-m-d H:i" }}</small>
+          </div>
+          <p class="mb-0 mt-2">{{ msg.body }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-muted">No messages yet.</p>
+  {% endif %}
+</div>
+
+<footer class="bg-dark text-light pt-4 mt-5">
+  <div class="container text-center">
+    <div class="d-flex justify-content-center gap-3 mb-3">
+      <a href="#" class="btn btn-outline-light btn-sm"><i class="bi bi-question-circle me-1"></i>Help</a>
+      <a href="#" class="btn btn-outline-light btn-sm"><i class="bi bi-info-circle me-1"></i>About Us</a>
+      <a href="#" class="btn btn-outline-light btn-sm"><i class="bi bi-telephone me-1"></i>Contact Us</a>
+    </div>
+    <p class="mb-0">&copy; 2026 JJ HALAL FARMS LTD</p>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

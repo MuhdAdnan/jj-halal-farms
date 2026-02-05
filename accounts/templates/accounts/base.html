@@ -1,0 +1,84 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}JJ HALAL FARMS LTD{% endblock %}</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-success sticky-top">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="{% url 'home' %}">JJ HALAL FARMS</a>
+
+    <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#mainNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="mainNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'orders:cart' %}">Cart ({{ cart_count }})</a></li>
+
+        <li class="nav-item"><a class="nav-link" href="#">Poultry</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Cattle</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Fish</a></li>
+
+        {% if user.is_authenticated %}
+          <li class="nav-item">
+            <a class="btn btn-light btn-sm ms-lg-3" href="{% url 'accounts:logout' %}">Logout</a>
+          </li>
+        {% else %}
+          <li class="nav-item">
+            <a class="btn btn-light btn-sm ms-lg-3" href="{% url 'accounts:login' %}">Login</a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+{% block content %}{% endblock %}
+
+<footer class="bg-dark text-light pt-4 mt-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4">
+        <h5>JJ HALAL FARMS LTD</h5>
+        <p>Quality poultry, cattle, and fish farming with reliable delivery services.</p>
+      </div>
+
+      <div class="col-md-4">
+        <h6>Quick Links</h6>
+        <ul class="list-unstyled">
+          <li><a href="#" class="text-light">Poultry</a></li>
+          <li><a href="#" class="text-light">Cattle</a></li>
+          <li><a href="#" class="text-light">Fish</a></li>
+        </ul>
+      </div>
+
+      <div class="col-md-4">
+        <h6>Contact</h6>
+        <p><i class="bi bi-telephone"></i> +234 810 422 6846</p>
+        <p><i class="bi bi-whatsapp"></i> WhatsApp Available</p>
+      </div>
+    </div>
+
+    <hr>
+    <p class="text-center mb-0">&copy; 2026 JJ HALAL FARMS LTD</p>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

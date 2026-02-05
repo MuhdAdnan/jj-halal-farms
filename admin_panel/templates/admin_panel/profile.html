@@ -1,0 +1,190 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Profile | JJ Halal Farms</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body class="bg-light" style="font-family: 'Poppins', sans-serif;">
+
+{% if messages %}
+<div class="position-fixed top-0 end-0 p-3" style="z-index: 1055;">
+  {% for message in messages %}
+    <div class="toast align-items-center text-bg-{{ message.tags }} border-0 mb-2" role="alert">
+      <div class="d-flex">
+        <div class="toast-body">{{ message }}</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-success px-4">
+  <a class="navbar-brand fw-bold" href="{% url 'admin_panel:dashboard' %}">
+    Welcome, {{ request.user.username }}
+  </a>
+
+  <button class="navbar-toggler d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#adminSidebar">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="ms-auto d-flex align-items-center gap-3">
+    <a href="{% url 'admin_panel:logout' %}" class="btn btn-outline-light btn-sm">
+      <i class="bi bi-box-arrow-right"></i> Logout
+    </a>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="container-fluid">
+  <div class="row">
+
+    <!-- SIDEBAR -->
+    <aside class="col-md-2 bg-white p-0 sidebar border-end collapse d-md-block" id="adminSidebar">
+      <ul class="nav flex-column pt-4">
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'admin_panel:dashboard' %}">
+            <i class="bi bi-speedometer2"></i> Dashboard
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'admin_panel:products' %}">
+            <i class="bi bi-box-seam"></i> Products
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'admin_panel:orders' %}">
+            <i class="bi bi-cart-check"></i> Orders
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'admin_panel:customers' %}">
+            <i class="bi bi-people"></i> Customers
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="{% url 'admin_panel:profile' %}">
+            <i class="bi bi-person-badge"></i> Profile
+          </a>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- CONTENT -->
+    <main class="col-md-10 p-4">
+
+      <h3 class="mb-4"><i class="bi bi-person-badge me-2"></i>Admin Profile</h3>
+
+      <div class="row">
+
+        <!-- PROFILE CARD -->
+        <div class="col-md-4">
+          <div class="card shadow-sm text-center">
+            <div class="card-body">
+
+              {% if profile.avatar %}
+                <img src="{{ profile.avatar.url }}" class="mb-3" width="200" height="160" style="object-fit: cover;">
+              {% else %}
+                <img src="{% static 'img/admin-avatar.png' %}" class="mb-3" width="200" height="160" style="object-fit: cover;">
+              {% endif %}
+
+              <h5 class="mb-0">{{ profile.business_name }}</h5>
+              <small class="text-muted">Administrator</small>
+
+              <hr>
+
+              <p class="small mb-1">
+                <i class="bi bi-envelope"></i> {{ request.user.email }}
+              </p>
+              <p class="small mb-1">
+                <i class="bi bi-telephone"></i> {{ profile.phone }}
+              </p>
+              <p class="small">
+                <i class="bi bi-geo-alt"></i> {{ profile.location }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- EDIT FORM -->
+        <div class="col-md-8">
+          <div class="card shadow-sm">
+            <div class="card-header bg-success text-white">
+              <i class="bi bi-pencil-square"></i> Edit Profile
+            </div>
+
+            <div class="card-body">
+              <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label class="form-label">Business Name</label>
+                    <input type="text" name="business_name" class="form-control"
+                           value="{{ profile.business_name }}">
+                  </div>
+
+                  <div class="col-md-6">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control"
+                           value="{{ request.user.email }}" disabled>
+                  </div>
+                </div>
+
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label class="form-label">Phone Number</label>
+                    <input type="text" name="phone" class="form-control"
+                           value="{{ profile.phone }}">
+                  </div>
+
+                  <div class="col-md-6">
+                    <label class="form-label">Location</label>
+                    <input type="text" name="location" class="form-control"
+                           value="{{ profile.location }}">
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">Business Description</label>
+                  <textarea name="description" class="form-control" rows="4">{{ profile.description }}</textarea>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">Profile Image</label>
+                  <input type="file" name="avatar" class="form-control">
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+                  <button type="reset" class="btn btn-outline-secondary">Cancel</button>
+                  <button type="submit" class="btn btn-success">Save Changes</button>
+                </div>
+
+              </form>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  document.querySelectorAll('.toast').forEach((toastEl) => {
+    const toast = new bootstrap.Toast(toastEl, { delay: 4000 });
+    toast.show();
+  });
+</script>
+</body>
+</html>
