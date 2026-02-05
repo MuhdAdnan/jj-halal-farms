@@ -1,4 +1,4 @@
-A custom Django-based admin dashboard for managing products, customers, orders, and payments for an agricultural e-commerce platform.  
+I built a custom Django-based admin dashboard for managing products, customers, orders, and payments for an agricultural e-commerce platform.  
 This project was built with real production use in mind, clean architecture, modular apps, and secure payment handling.
 
 Key Features
